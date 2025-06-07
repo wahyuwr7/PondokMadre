@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
     namespace = "com.wiwiwi.pondokmadre"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.wiwiwi.pondokmadre"
@@ -39,6 +40,13 @@ android {
     }
 }
 
+configurations {
+    create("cleanedAnnotations")
+    implementation {
+        exclude(group = "org.jetbrains", module = "annotations")
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -49,6 +57,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.navigation.compose.android)
+    implementation(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,8 +68,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.bom)
-    implementation(libs.postgrest.kt)
-    implementation(libs.auth.kt)
-    implementation(libs.realtime.kt)
+    implementation(platform(libs.bom))
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+
 }
