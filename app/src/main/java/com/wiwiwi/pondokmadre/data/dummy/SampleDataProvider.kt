@@ -15,11 +15,11 @@ object SampleDataProvider {
     )
 
     val propertyUnits = listOf(
-        PropertyUnitEntity(id = 101, code = "A-01", name = "Kamar A-01", price = 1250000.0, propertyId = 1),
-        PropertyUnitEntity(id = 102, code = "A-02", name = "Kamar A-02", price = 1250000.0, propertyId = 1),
-        PropertyUnitEntity(id = 103, code = "A-03", name = "Kamar A-03", price = 1300000.0, propertyId = 1),
-        PropertyUnitEntity(id = 201, code = "B-01", name = "Paviliun B-01", price = 2500000.0, propertyId = 2),
-        PropertyUnitEntity(id = 104, code = "B-05", name = "Kamar B-05", price = 1200000.0, propertyId = 1)
+        PropertyUnitEntity(id = 101, code = "A-01", name = "Kamar A-01", price = 1250000.0, propertyId = 1, propertyCode = "PS1"),
+        PropertyUnitEntity(id = 102, code = "A-02", name = "Kamar A-02", price = 1250000.0, propertyId = 1, propertyCode = "PS1"),
+        PropertyUnitEntity(id = 103, code = "A-03", name = "Kamar A-03", price = 1300000.0, propertyId = 1,  propertyCode = "PS1"),
+        PropertyUnitEntity(id = 201, code = "B-01", name = "Paviliun B-01", price = 2500000.0, propertyId = 2, propertyCode = "PS2"),
+        PropertyUnitEntity(id = 104, code = "B-05", name = "Kamar B-05", price = 1200000.0, propertyId = 1, propertyCode = "PS1")
     )
 
     val sampleSummary = listOf(

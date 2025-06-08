@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.wiwiwi.pondokmadre.data.model.PaymentMethod
 import com.wiwiwi.pondokmadre.data.model.entity.PaymentMethodEntity
 import com.wiwiwi.pondokmadre.data.model.entity.PropertyEntity
@@ -20,6 +21,12 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProperty(property: PropertyEntity)
 
+    @Update
+    suspend fun updateProperty(property: PropertyEntity)
+
+    @Delete
+    suspend fun deleteProperty(property: PropertyEntity)
+
     @Query("SELECT * FROM properties ORDER BY name ASC")
     fun getAllProperties(): Flow<List<PropertyEntity>>
 
@@ -33,6 +40,12 @@ interface AppDao {
 
     @Query("SELECT * FROM property_units ORDER BY name ASC")
     fun getAllPropertyUnits(): Flow<List<PropertyUnitEntity>>
+
+    @Update
+    fun updatePropertyUnit(propertyUnit: PropertyUnitEntity)
+
+    @Delete
+    fun deletePropertyUnit(propertyUnit: PropertyUnitEntity)
 
     // --- Operasi untuk Tenant ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -57,4 +70,7 @@ interface AppDao {
 
     @Query("SELECT * FROM payment_methods ORDER BY name ASC")
     fun getAllPaymentMethods(): Flow<List<PaymentMethodEntity>>
+
+
+
 }

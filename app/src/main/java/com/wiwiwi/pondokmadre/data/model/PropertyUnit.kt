@@ -5,5 +5,6 @@ data class PropertyUnit(
     val code: String,
     val name: String,
     val price: Double,
-    val propertyId: Int
+    val propertyId: Int,
+    val propertyCode: String
 )

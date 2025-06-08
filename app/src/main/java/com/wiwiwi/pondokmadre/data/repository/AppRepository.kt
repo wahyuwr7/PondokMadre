@@ -23,8 +23,24 @@ class AppRepository(private val appDao: AppDao) {
         appDao.insertProperty(property)
     }
 
-    suspend fun inserPropertyUnit(propertyUnit: PropertyUnitEntity) {
+    suspend fun updateProperty(property: PropertyEntity) {
+        appDao.updateProperty(property)
+    }
+
+    suspend fun deleteProperty(property: PropertyEntity) {
+        appDao.deleteProperty(property)
+    }
+
+    suspend fun insertPropertyUnit(propertyUnit: PropertyUnitEntity) {
         appDao.insertPropertyUnit(propertyUnit)
+    }
+
+    suspend fun updatePropertyUnit(propertyUnit: PropertyUnitEntity) {
+        appDao.updatePropertyUnit(propertyUnit)
+    }
+
+    suspend fun deletePropertyUnit(propertyUnit: PropertyUnitEntity) {
+        appDao.deletePropertyUnit(propertyUnit)
     }
 
     suspend fun insertPaymentMethod(paymentMethodEntity: PaymentMethodEntity) {

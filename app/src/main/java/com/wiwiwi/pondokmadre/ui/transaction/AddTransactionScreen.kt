@@ -1,5 +1,10 @@
 package com.wiwiwi.pondokmadre.ui.transaction
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,9 +40,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,6 +57,7 @@ import com.wiwiwi.pondokmadre.data.model.entity.PaymentMethodEntity
 import com.wiwiwi.pondokmadre.data.model.entity.PropertyUnitEntity
 import com.wiwiwi.pondokmadre.data.model.entity.TenantEntity
 import com.wiwiwi.pondokmadre.ui.theme.PondokMadreTheme
+import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +68,7 @@ fun AddTransactionScreen(
     onSaveClick: (amount: Double, type: TransactionType, description: String, tenant: TenantEntity?, paymentMethod: PaymentMethodEntity?) -> Unit,
     onBackClick: () -> Unit
 ) {
-    var selectedTransactionType by remember { mutableStateOf(TransactionType.PEMASUKAN) }
+    var selectedTransactionType by remember { mutableStateOf(TransactionType.INCOME) }
     var amount by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedTenant by remember { mutableStateOf<TenantEntity?>(null) }
@@ -88,7 +98,6 @@ fun AddTransactionScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // -- Input Jumlah yang lebih menonjol --
             Text("Jumlah Transaksi", style = MaterialTheme.typography.titleMedium)
             AmountInput(
                 amount = amount,
@@ -100,38 +109,47 @@ fun AddTransactionScreen(
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // -- Pilihan Tipe Transaksi --
                 TransactionTypeSelector(
                     selectedType = selectedTransactionType,
-                    onTypeSelected = { selectedTransactionType = it }
+                    onTypeSelected = {
+                        selectedTransactionType = it
+                        if (it == TransactionType.EXPENSE) {
+                            selectedTenant = null
+                            selectedPaymentMethod = null
+                        }
+                    }
                 )
 
-                // -- Dropdown Penyewa --
-                TenantDropdown(
-                    tenants = tenants,
-                    selectedTenant = selectedTenant,
-                    onTenantSelected = { selectedTenant = it }
-                )
+                AnimatedVisibility(
+                    visible = selectedTransactionType == TransactionType.INCOME,
+                    enter = expandVertically(animationSpec = tween(300)),
+                    exit = shrinkVertically(animationSpec = tween(300))
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        TenantDropdown(
+                            tenants = tenants,
+                            selectedTenant = selectedTenant,
+                            onTenantSelected = { selectedTenant = it }
+                        )
 
-                // -- Info Unit Otomatis --
-                val selectedUnitInfo = selectedTenant?.unitId?.let { unitMap[it] }
-                if (selectedUnitInfo != null) {
-                    Text(
-                        text = "Unit terkait: ${selectedUnitInfo.name}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 8.dp, top = 0.dp)
-                    )
+                        val selectedUnitInfo = selectedTenant?.unitId?.let { unitMap[it] }
+                        if (selectedUnitInfo != null) {
+                            Text(
+                                text = "Unit terkait: ${selectedUnitInfo.name}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(start = 8.dp, top = 0.dp)
+                            )
+                        }
+
+                        PaymentMethodDropdown(
+                            paymentMethods = paymentMethods,
+                            selectedMethod = selectedPaymentMethod,
+                            onMethodSelected = { selectedPaymentMethod = it }
+                        )
+                    }
                 }
 
-                // -- Dropdown Metode Pembayaran --
-                PaymentMethodDropdown(
-                    paymentMethods = paymentMethods,
-                    selectedMethod = selectedPaymentMethod,
-                    onMethodSelected = { selectedPaymentMethod = it }
-                )
-
-                // -- Input Deskripsi & Tanggal --
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -182,8 +200,14 @@ private fun AmountInput(amount: String, onAmountChange: (String) -> Unit) {
         )
         BasicTextField(
             value = amount,
-            onValueChange = { onAmountChange(it.filter { char -> char.isDigit() }) },
+            onValueChange = {
+                // Hanya simpan digit ke dalam state, batasi panjang agar tidak overflow
+                if (it.length <= 15) {
+                    onAmountChange(it.filter { char -> char.isDigit() })
+                }
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            visualTransformation = ThousandSeparatorVisualTransformation(),
             textStyle = TextStyle(
                 fontSize = 48.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -212,7 +236,7 @@ private fun TransactionTypeSelector(
                 onClick = { onTypeSelected(option) },
                 selected = option == selectedType
             ) {
-                Text(option.name)
+                Text(option.label)
             }
         }
     }
@@ -303,8 +327,8 @@ fun AddTransactionScreenPreview() {
         TenantEntity(2, "Citra Lestari", 102, "05 Jun 2025", PaymentStatus.PAID)
     )
     val sampleUnits = listOf(
-        PropertyUnitEntity(101, "A-01", "Kamar A-01", 1250000.0, 1),
-        PropertyUnitEntity(102, "A-02", "Kamar A-02", 1250000.0, 1)
+        PropertyUnitEntity(101, "A-01", "Kamar A-01", 1250000.0, 1, propertyCode = "PS1"),
+        PropertyUnitEntity(102, "A-02", "Kamar A-02", 1250000.0, 1,  propertyCode = "PS1")
     )
     val samplePaymentMethods = listOf(
         PaymentMethodEntity(1, "Transfer Bank BRI"),
@@ -321,6 +345,41 @@ fun AddTransactionScreenPreview() {
                 amount, type, description, tenant, paymentMethod ->  {}
             },
             onBackClick = {}
+        )
+    }
+}
+
+class ThousandSeparatorVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val originalText = text.text
+        if (originalText.isEmpty()) {
+            return TransformedText(text, OffsetMapping.Identity)
+        }
+
+        // Pastikan hanya memproses digit
+        val digitsOnly = originalText.filter { it.isDigit() }
+        if (digitsOnly.isEmpty()) {
+            return TransformedText(AnnotatedString(""), OffsetMapping.Identity)
+        }
+
+        val formatter = DecimalFormat("#,###")
+        val formattedText = formatter.format(digitsOnly.toLong()).replace(",", ".")
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                val dotsBefore = (offset - 1).coerceAtLeast(0) / 3
+                return offset + dotsBefore
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                val dotsBefore = formattedText.take(offset).count { it == '.' }
+                return offset - dotsBefore
+            }
+        }
+
+        return TransformedText(
+            AnnotatedString(formattedText),
+            offsetMapping
         )
     }
 }

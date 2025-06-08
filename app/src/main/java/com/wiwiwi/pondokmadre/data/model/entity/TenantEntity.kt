@@ -1,17 +1,10 @@
 package com.wiwiwi.pondokmadre.data.model.entity
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.wiwiwi.pondokmadre.data.model.PaymentStatus
 
-@Entity(tableName = "tenants",
-    foreignKeys = [ForeignKey(
-        entity = PropertyUnitEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["unitId"],
-        onDelete = ForeignKey.SET_NULL
-    )])
+@Entity(tableName = "tenants")
 data class TenantEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

@@ -1,5 +1,6 @@
 package com.wiwiwi.pondokmadre.data.model
 
-enum class TransactionType {
-    PEMASUKAN, PENGELUARAN
+enum class TransactionType(val label : String) {
+    INCOME("Pemasukan"),
+    EXPENSE("Pengeluaran")
 }
