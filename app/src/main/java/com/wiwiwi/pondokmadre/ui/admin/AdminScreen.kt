@@ -19,12 +19,10 @@ import androidx.compose.material.icons.filled.MeetingRoom
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +47,6 @@ val adminMenuList = listOf(
     AdminMenu("Metode Pembayaran", "Atur metode pembayaran yang diterima", Icons.Default.Payments, "manage_payment_methods")
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminScreen(onMenuClick: (String) -> Unit) {
     Scaffold { paddingValues ->
@@ -78,6 +75,8 @@ fun AdminScreen(onMenuClick: (String) -> Unit) {
                         val route = when (menu.title) {
                             "Kelola Properti" -> AppRoutes.MANAGE_PROPERTIES
                             "Kelola Unit" -> AppRoutes.MANAGE_UNITS
+                            "Kelola Penyewa" -> AppRoutes.MANAGE_TENANTS
+                            "Metode Pembayaran" -> AppRoutes.MANAGE_PAYMENT_METHODS
                             else -> ""
                         }
                         if (route.isNotEmpty()) {

@@ -46,4 +46,24 @@ class AppRepository(private val appDao: AppDao) {
     suspend fun insertPaymentMethod(paymentMethodEntity: PaymentMethodEntity) {
         appDao.insertPaymentMethod(paymentMethodEntity)
     }
+
+    suspend fun updatePaymentMethod(paymentMethodEntity: PaymentMethodEntity) {
+        appDao.updatePaymentMethod(paymentMethodEntity)
+    }
+
+    suspend fun deletePaymentMethod(paymentMethodEntity: PaymentMethodEntity) {
+        appDao.deletePaymentMethod(paymentMethodEntity)
+    }
+
+    suspend fun insertTenant(tenantEntity: TenantEntity) {
+        appDao.insertTenant(tenantEntity)
+    }
+
+    suspend fun updateTenant(tenantEntity: TenantEntity) {
+        appDao.updateTenant(tenantEntity)
+    }
+
+    suspend fun deleteTenant(tenantEntity: TenantEntity) {
+        appDao.updateTenant(tenantEntity)
+    }
 }

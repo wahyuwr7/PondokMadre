@@ -42,14 +42,20 @@ interface AppDao {
     fun getAllPropertyUnits(): Flow<List<PropertyUnitEntity>>
 
     @Update
-    fun updatePropertyUnit(propertyUnit: PropertyUnitEntity)
+    suspend fun updatePropertyUnit(propertyUnit: PropertyUnitEntity)
 
     @Delete
-    fun deletePropertyUnit(propertyUnit: PropertyUnitEntity)
+    suspend fun deletePropertyUnit(propertyUnit: PropertyUnitEntity)
 
     // --- Operasi untuk Tenant ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTenant(tenant: TenantEntity)
+
+    @Update
+    suspend fun updateTenant(tenant: TenantEntity)
+
+    @Delete
+    suspend fun deleteTenant(tenant: TenantEntity)
 
     @Query("SELECT * FROM tenants ORDER BY name ASC")
     fun getAllTenants(): Flow<List<TenantEntity>>
@@ -65,8 +71,11 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPaymentMethod(paymentMethod: PaymentMethodEntity)
 
-    @Delete()
+    @Delete
     suspend fun deletePaymentMethod(paymentMethod: PaymentMethodEntity)
+
+    @Update
+    suspend fun updatePaymentMethod(paymentMethod: PaymentMethodEntity)
 
     @Query("SELECT * FROM payment_methods ORDER BY name ASC")
     fun getAllPaymentMethods(): Flow<List<PaymentMethodEntity>>

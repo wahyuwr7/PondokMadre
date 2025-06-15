@@ -12,8 +12,12 @@ import androidx.navigation.compose.composable
 import com.wiwiwi.pondokmadre.PondokMadreApp
 import com.wiwiwi.pondokmadre.ui.ViewModelFactory
 import com.wiwiwi.pondokmadre.ui.admin.AdminScreen
+import com.wiwiwi.pondokmadre.ui.admin.paymentmethod.ManagePaymentMethodsScreen
+import com.wiwiwi.pondokmadre.ui.admin.paymentmethod.ManagePaymentMethodsViewModel
 import com.wiwiwi.pondokmadre.ui.admin.property.ManagePropertiesScreen
 import com.wiwiwi.pondokmadre.ui.admin.property.ManagePropertiesViewModel
+import com.wiwiwi.pondokmadre.ui.admin.tenant.ManageTenantsScreen
+import com.wiwiwi.pondokmadre.ui.admin.tenant.ManageTenantsViewModel
 import com.wiwiwi.pondokmadre.ui.admin.unit.ManageUnitsScreen
 import com.wiwiwi.pondokmadre.ui.admin.unit.ManageUnitsViewModel
 import com.wiwiwi.pondokmadre.ui.dashboard.DashboardScreen
@@ -28,6 +32,8 @@ object AppRoutes {
     const val ADD_TRANSACTION = "add_transaction_route"
     const val MANAGE_PROPERTIES = "manage_properties_route"
     const val MANAGE_UNITS = "manage_units_route"
+    const val MANAGE_TENANTS = "manage_tenants_route"
+    const val MANAGE_PAYMENT_METHODS = "manage_payment_methods_route"
 }
 
 @Composable
@@ -43,15 +49,13 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         // Rute untuk Bottom Nav Item "Dasbor"
         composable(BottomNavItem.Dashboard.route) {
             val viewModel: DashboardViewModel = viewModel(factory = viewModelFactory)
-            val tenants by viewModel.tenants.collectAsState()
-            val units by viewModel.propertyUnits.collectAsState()
-            val properties by viewModel.properties.collectAsState()
+            val uiState by viewModel.uiState.collectAsState() // Mengambil UI State
 
             DashboardScreen(
-                tenants = tenants,
-                propertyUnits = units,
-                properties = properties,
-                onAddTransactionClick = { navController.navigate(AppRoutes.ADD_TRANSACTION) }
+                uiState = uiState, // Meneruskan UI State ke layar
+                onAddTransactionClick = {
+                    navController.navigate(AppRoutes.ADD_TRANSACTION)
+                }
             )
         }
 
@@ -111,6 +115,32 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
                 onAddUnit = viewModel::addUnit,
                 onUpdateUnit = viewModel::updateUnit,
                 onDeleteUnit = viewModel::deleteUnit,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(AppRoutes.MANAGE_TENANTS) {
+            val viewModel: ManageTenantsViewModel = viewModel(factory = viewModelFactory)
+            val tenants by viewModel.tenants.collectAsState()
+            val units by viewModel.units.collectAsState()
+            ManageTenantsScreen(
+                tenants = tenants,
+                units = units,
+                onAddTenant = viewModel::addTenant,
+                onUpdateTenant = viewModel::updateTenant,
+                onDeleteTenant = viewModel::deleteTenant,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(AppRoutes.MANAGE_PAYMENT_METHODS) {
+            val viewModel: ManagePaymentMethodsViewModel = viewModel(factory = viewModelFactory)
+            val methods by viewModel.paymentMethods.collectAsState()
+            ManagePaymentMethodsScreen(
+                paymentMethods = methods,
+                onAddMethod = viewModel::addMethod,
+                onUpdateMethod = viewModel::updateMethod,
+                onDeleteMethod = viewModel::deleteMethod,
                 onBackClick = { navController.popBackStack() }
             )
         }
